@@ -109,46 +109,19 @@ export const editCat = async (req, res) => {
   }
 };
 
-// const getWarehouseinventories = async (req, res) => {
-//   try {
-//     const inventories = await knex("warehouses")
-//       .join("inventories", "inventories.warehouse_id", "warehouses.id")
-//       .where({ warehouse_id: req.params.id })
-//       .select(
-//         "inventories.id",
-//         "inventories.item_name",
-//         "inventories.category",
-//         "inventories.status",
-//         "inventories.quantity"
-//       );
+export const deleteCat = async (req, res) => {
+  const catId = req.params.id;
+  try {
+    const rowsDeleted = await knex("cats").where("id", catId).delete();
 
-//     res.status(200).json(inventories);
-//   } catch (error) {
-//     res.status(404).json({
-//       message: `no inventory found with this warehouse ID ${req.params.id}: ${error}`,
-//     });
-//   }
-// };
-
-// const deleteWarehouse = async (req, res) => {
-//   const warehouseId = req.params.id;
-//   try {
-//     const rowsDeletedInventories = await knex("inventories")
-//       .where("warehouse_id", warehouseId)
-//       .delete();
-
-//     const rowsDeletedWarehouse = await knex("warehouses")
-//       .where("id", warehouseId)
-//       .delete();
-
-//     if (rowsDeletedWarehouse === 0) {
-//       return res.status(404).json({
-//         message: `Warehouse with ID ${warehouseId} not found`,
-//       });
-//     }
-//     return res.status(204).send();
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).send();
-//   }
-// };
+    if (rowsDeleted === 0) {
+      return res.status(404).json({
+        message: `Cat with ID ${catId} not found`,
+      });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};
