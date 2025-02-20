@@ -76,68 +76,38 @@ export const findCat = async (req, res) => {
   }
 };
 
-// const editWarehouse = async (req, res) => {
-//   const {
-//     warehouse_name,
-//     address,
-//     city,
-//     country,
-//     contact_name,
-//     contact_position,
-//     contact_phone,
-//     contact_email,
-//   } = req.body;
-//   if (
-//     !warehouse_name ||
-//     !address ||
-//     !city ||
-//     !country ||
-//     !contact_name ||
-//     !contact_position ||
-//     !contact_phone ||
-//     !contact_email
-//   ) {
-//     return res
-//       .status(400)
-//       .json("Error editing warehouse because of missing properties");
-//   }
-//   if (!/^\+?[0-9\s\-\(\)]{10,}$/.test(contact_phone)) {
-//     return res.status(400).json({ error: "Invalid phone number" });
-//   }
-//   if (!/\S+@\S+\.\S+/.test(contact_email)) {
-//     return res.status(400).json({ error: "Invalid email" });
-//   }
-//   try {
-//     const rowAffected = await knex("warehouses")
-//       .where({ id: req.params.id })
-//       .update(req.body);
-//     if (rowAffected === 0) {
-//       return res.status(404).json({
-//         message: `Warehouse with ID ${req.params.id} not found`,
-//       });
-//     }
-//     const editedWarehouse = await knex("warehouses")
-//       .select(
-//         "id",
-//         "warehouse_name",
-//         "address",
-//         "city",
-//         "country",
-//         "contact_name",
-//         "contact_position",
-//         "contact_phone",
-//         "contact_email"
-//       )
-//       .where({
-//         id: req.params.id,
-//       })
-//       .first();
-//     res.status(200).json(editedWarehouse);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(400).json({ message: `Error adding warehouse. ${error}` });
-//   }
-// };
+export const editCat = async (req, res) => {
+  const { photo, name, birth_date, gender, color, weight, intro } = req.body;
+
+  if (
+    !photo ||
+    !name ||
+    !birth_date ||
+    !gender ||
+    !color ||
+    !weight ||
+    !intro
+  ) {
+    return res
+      .status(400)
+      .json("Error adding cat because of missing properties");
+  }
+
+  try {
+    const rowAffected = await knex("cats")
+      .where({ id: req.params.id })
+      .update(req.body);
+    if (rowAffected === 0) {
+      return res.status(404).json({
+        message: `Cat with ID ${req.params.id} not found`,
+      });
+    }
+    res.status(200).json(rowAffected);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: `Error editing cat. ${error}` });
+  }
+};
 
 // const getWarehouseinventories = async (req, res) => {
 //   try {
