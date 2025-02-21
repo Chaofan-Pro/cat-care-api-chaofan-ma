@@ -1,8 +1,13 @@
 import express from "express";
-const router = express.Router();
+import { upload } from "../config/multer-config.js";
 import * as catsController from "../controllers/cats-controller.js";
 
-router.route("/").get(catsController.getCats).post(catsController.addCat);
+const router = express.Router();
+
+router
+  .route("/")
+  .get(catsController.getCats)
+  .post(catsController.addCat);
 
 router
   .route("/:id")

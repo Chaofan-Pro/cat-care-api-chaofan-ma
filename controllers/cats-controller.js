@@ -1,4 +1,6 @@
 import initKnex from "knex";
+import cloudinary from "cloudinary";
+import multer from "multer";
 import configuration from "../knexfile.js";
 const knex = initKnex(configuration);
 
@@ -21,29 +23,140 @@ export const getCats = async (_req, res) => {
   }
 };
 
+// export const uploadImage = async (req, res) => {
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+const storage = multer.memoryStorage();
+const upload = multer({ storage }).single("photo");
+
+//   const form = formidable({ multiples: false });
+
+//   form.parse(req, async (err, fields, files) => {
+//     if (err || !files.image) {
+//       return res
+//         .status(400)
+//         .json({ error: "No image provided or file parsing error" });
+//     }
+//   });
+
+//   const imageFile = files.image[0] || files.image;
+//   if (!imageFile || !imageFile.filepath) {
+//     return res.status(400).json({ error: "Invalid file format" });
+//   }
+
+//   const imagePath = imageFile.filepath;
+//   console.log("✅ File Received:", imagePath);
+
+//   // ✅ Upload to Cloudinary
+//   let uploadResult;
+//   try {
+//     console.log("🔍 Uploading file to Cloudinary:", imagePath);
+//     uploadResult = await cloudinary.uploader.upload(imagePath, {
+//       folder: "uploads",
+//     });
+//   } catch (cloudinaryError) {
+//     console.error("❌ Cloudinary Upload Failed:", cloudinaryError);
+//     return res.status(500).json({ error: "Cloudinary upload failed" });
+//   }
+
+//   const imageUrl = uploadResult.secure_url;
+//   console.log("✅ Cloudinary Upload Success:", imageUrl);
+// };
+
 export const addCat = async (req, res) => {
-  const { photo, name, birth_date, gender, color, weight, intro } = req.body;
-  if (
-    !photo ||
-    !name ||
-    !birth_date ||
-    !gender ||
-    !color ||
-    !weight ||
-    !intro
-  ) {
-    return res
-      .status(400)
-      .json("Error adding cat because of missing properties");
-  }
-  try {
-    await knex("cats").insert(req.body);
-    res.status(201).json();
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: `Error adding cat. ${error}` });
-  }
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(500).json({ error: "Image upload failed" });
+    }
+
+    const { name, birth_date, gender, color, weight, intro } = req.body;
+
+    if (
+      !req.file ||
+      !name ||
+      !birth_date ||
+      !gender ||
+      !color ||
+      !weight ||
+      !intro
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+      // Upload image to Cloudinary
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.v2.uploader
+          .upload_stream(
+            { folder: "cat-care-app" }, // Optional folder
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          )
+          .end(req.file.buffer);
+      });
+
+      const photoUrl = uploadResult.secure_url; // Get the uploaded image URL
+      console.log(photoUrl);
+
+      // Insert cat data into the database
+      await knex("cats").insert({
+        photo: photoUrl,
+        name,
+        birth_date,
+        gender,
+        color,
+        weight,
+        intro,
+      });
+
+      res.status(201).json({ message: "Cat added successfully!" });
+    } catch (error) {
+      console.error("Error adding cat:", error);
+      res.status(500).json({ error: "Failed to add cat" });
+    }
+  });
 };
+//   const { name, birth_date, gender, color, weight, intro } = req.body;
+
+//   let photo = "";
+//   if (req.file) {
+//     photo = `http://localhost:${PORT}/uploads/${req.file.filename}`; // URL to the uploaded file
+//   }
+
+//   if (
+//     !photo ||
+//     !name ||
+//     !birth_date ||
+//     !gender ||
+//     !color ||
+//     !weight ||
+//     !intro
+//   ) {
+//     return res
+//       .status(400)
+//       .json("Error adding cat because of missing properties");
+//   }
+//   try {
+//     await knex("cats").insert({
+//       name,
+//       photo,
+//       birth_date,
+//       gender,
+//       color,
+//       weight,
+//       intro,
+//     });
+//     res.status(201).json();
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).json({ message: `Error adding cat. ${error}` });
+//   }
+// };
 
 export const findCat = async (req, res) => {
   try {
