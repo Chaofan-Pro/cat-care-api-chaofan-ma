@@ -35,6 +35,7 @@ export const addRating = async (req, res) => {
   }
 };
 
+
 // export const findFood = async (req, res) => {
 //   try {
 //     const foodFound = await knex("food")

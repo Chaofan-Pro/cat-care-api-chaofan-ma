@@ -167,3 +167,24 @@ export const deleteFood = async (req, res) => {
     return res.status(500).send();
   }
 };
+
+export const findFoodRating = async (req, res) => {
+  try {
+    const ratings = await knex("food")
+      .join("food_rating", "food_rating.food_id", "food.id")
+      .where({ food_id: req.params.id })
+      .select(
+        "food_rating.id",
+        "food_rating.food_id",
+        "food_rating.cat_id",
+        "food_rating.rating",
+        "food_rating.comment"
+      );
+
+    res.status(200).json(ratings);
+  } catch (error) {
+    res.status(404).json({
+      message: `no rating found with this food ID ${req.params.id}: ${error}`,
+    });
+  }
+};

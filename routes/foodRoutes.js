@@ -11,4 +11,8 @@ router
   .put(foodController.editFood)
   .delete(foodController.deleteFood);
 
+  router
+  .route("/:id/rating")
+  .get(foodController.findFoodRating)
+
 export default router;
