@@ -7,7 +7,7 @@ export const getRating = async (_req, res) => {
     const food = await knex("food_rating").select(
       "id",
       "food_id",
-      "cat_id",
+      "cat_name",
       "rating",
       "comment"
     );
@@ -19,9 +19,9 @@ export const getRating = async (_req, res) => {
 };
 
 export const addRating = async (req, res) => {
-  const { food_id, cat_id, rating, comment } = req.body;
+  const { food_id, cat_name, rating, comment } = req.body;
 
-  if (!food_id || !cat_id || !rating || !comment) {
+  if (!food_id || !cat_name || !rating || !comment) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 

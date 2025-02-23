@@ -11,7 +11,8 @@ export const getFood = async (_req, res) => {
       "food_name",
       "food_brand",
       "food_photo",
-      "food_type"
+      "food_type",
+      "food_description"
     );
     res.status(200).json(food);
   } catch (err) {
@@ -26,17 +27,23 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 const storage = multer.memoryStorage();
-const upload = multer({ storage }).single("photo");
+const upload = multer({ storage }).single("food_photo");
 
 export const addFood = async (req, res) => {
   upload(req, res, async (err) => {
-    if (err) {
+    if (err) {console.error("Image upload failed:", err);
       return res.status(500).json({ error: "Image upload failed" });
     }
 
-    const { food_name, food_brand, food_type } = req.body;
+    const { food_name, food_brand, food_type, food_description } = req.body;
 
-    if (!req.file || !food_name || !food_brand || !food_type) {
+    if (
+      !req.file ||
+      !food_name ||
+      !food_brand ||
+      !food_type ||
+      !food_description
+    ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -53,11 +60,12 @@ export const addFood = async (req, res) => {
       const photoUrl = uploadResult.secure_url;
       console.log(photoUrl);
 
-      await knex("cats").insert({
-        photo: photoUrl,
+      await knex("food").insert({
+        food_photo: photoUrl,
         food_name,
         food_brand,
         food_type,
+        food_description,
       });
 
       res.status(201).json({ message: "Food added successfully!" });
@@ -71,7 +79,14 @@ export const addFood = async (req, res) => {
 export const findFood = async (req, res) => {
   try {
     const foodFound = await knex("food")
-      .select("id", "food_name", "food_brand", "food_photo", "food_type")
+      .select(
+        "id",
+        "food_name",
+        "food_brand",
+        "food_photo",
+        "food_type",
+        "food_description"
+      )
       .where({
         id: req.params.id,
       })
@@ -96,9 +111,16 @@ export const editFood = async (req, res) => {
       return res.status(500).json({ error: "Image upload failed" });
     }
 
-    const { food_name, food_brand, food_photo, food_type } = req.body;
+    const { food_name, food_brand, food_photo, food_type, food_description } =
+      req.body;
 
-    if (!food_name || !food_brand || !food_photo || !food_type) {
+    if (
+      !food_name ||
+      !food_brand ||
+      !food_photo ||
+      !food_type ||
+      !food_description
+    ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -127,6 +149,7 @@ export const editFood = async (req, res) => {
         food_brand,
         food_photo,
         food_type,
+        food_description,
       };
 
       if (photoUrl) {
@@ -176,7 +199,7 @@ export const findFoodRating = async (req, res) => {
       .select(
         "food_rating.id",
         "food_rating.food_id",
-        "food_rating.cat_id",
+        "food_rating.cat_name",
         "food_rating.rating",
         "food_rating.comment"
       );

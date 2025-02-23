@@ -4,14 +4,14 @@ export async function seed(knex) {
     {
       id: 1,
       food_id: 1,
-      cat_id: 1,
+      cat_name: "Tomat",
       rating: 5,
       comment: "delicious",
     },
     {
       id: 2,
       food_id: 1,
-      cat_id: 2,
+      cat_name: "Pomat",
       rating: 5,
       comment: "delicious",
     },
