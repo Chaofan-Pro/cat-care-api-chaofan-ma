@@ -20,95 +20,75 @@ export const getFood = async (_req, res) => {
   }
 };
 
-// cloudinary.v2.config({
-//   cloud_name: process.env.CLOUDINARY_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_SECRET,
-// });
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage }).single("photo");
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+const storage = multer.memoryStorage();
+const upload = multer({ storage }).single("photo");
 
-// export const addCat = async (req, res) => {
-//   upload(req, res, async (err) => {
-//     if (err) {
-//       return res.status(500).json({ error: "Image upload failed" });
-//     }
+export const addFood = async (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(500).json({ error: "Image upload failed" });
+    }
 
-//     const { name, birth_date, gender, color, weight, intro } = req.body;
+    const { food_name, food_brand, food_type } = req.body;
 
-//     if (
-//       !req.file ||
-//       !name ||
-//       !birth_date ||
-//       !gender ||
-//       !color ||
-//       !weight ||
-//       !intro
-//     ) {
-//       return res.status(400).json({ error: "Missing required fields" });
-//     }
+    if (!req.file || !food_name || !food_brand || !food_type) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-//     try {
-//       const uploadResult = await new Promise((resolve, reject) => {
-//         cloudinary.v2.uploader
-//           .upload_stream({ folder: "cat-care-app" }, (error, result) => {
-//             if (error) reject(error);
-//             else resolve(result);
-//           })
-//           .end(req.file.buffer);
-//       });
+    try {
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.v2.uploader
+          .upload_stream({ folder: "cat-care-app" }, (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(req.file.buffer);
+      });
 
-//       const photoUrl = uploadResult.secure_url;
-//       console.log(photoUrl);
+      const photoUrl = uploadResult.secure_url;
+      console.log(photoUrl);
 
-//       await knex("cats").insert({
-//         photo: photoUrl,
-//         name,
-//         birth_date,
-//         gender,
-//         color,
-//         weight,
-//         intro,
-//       });
+      await knex("cats").insert({
+        photo: photoUrl,
+        food_name,
+        food_brand,
+        food_type,
+      });
 
-//       res.status(201).json({ message: "Cat added successfully!" });
-//     } catch (error) {
-//       console.error("Error adding cat:", error);
-//       res.status(500).json({ error: "Failed to add cat" });
-//     }
-//   });
-// };
+      res.status(201).json({ message: "Food added successfully!" });
+    } catch (error) {
+      console.error("Error adding food:", error);
+      res.status(500).json({ error: "Failed to add food" });
+    }
+  });
+};
 
-// export const findCat = async (req, res) => {
-//   try {
-//     const catFound = await knex("cats")
-//       .select(
-//         "id",
-//         "name",
-//         "photo",
-//         "birth_date",
-//         "gender",
-//         "color",
-//         "weight",
-//         "intro"
-//       )
-//       .where({
-//         id: req.params.id,
-//       })
-//       .first();
+export const findFood = async (req, res) => {
+  try {
+    const foodFound = await knex("food")
+      .select("id", "food_name", "food_brand", "food_photo", "food_type")
+      .where({
+        id: req.params.id,
+      })
+      .first();
 
-//     if (catFound.length === 0) {
-//       return res.status(404).json({
-//         message: `Cat with ID ${req.params.id} not found`,
-//       });
-//     }
-//     res.status(200).json(catFound);
-//   } catch (error) {
-//     res.status(500).json({
-//       message: `Unable to retrieve cat data for cat with ID ${req.params.id}`,
-//     });
-//   }
-// };
+    if (foodFound.length === 0) {
+      return res.status(404).json({
+        message: `Food with ID ${req.params.id} not found`,
+      });
+    }
+    res.status(200).json(foodFound);
+  } catch (error) {
+    res.status(500).json({
+      message: `Unable to retrieve food data for food with ID ${req.params.id}`,
+    });
+  }
+};
 
 // export const editCat = async (req, res) => {
 //   upload(req, res, async (err) => {
