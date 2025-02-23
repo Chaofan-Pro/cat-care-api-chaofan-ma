@@ -7,7 +7,7 @@ export async function seed(knex) {
       food_brand: "Chicken feast",
       food_photo:
         "https://res.cloudinary.com/dzhnttkky/image/upload/v1740077558/photo_2025-01-16_13-17-41_jlup8g.jpg",
-      food_type: "dry food",
+      food_type: "Dry Food",
     },
     {
       id: 2,
@@ -15,7 +15,7 @@ export async function seed(knex) {
       food_brand: "Chicken feast",
       food_photo:
         "https://res.cloudinary.com/dzhnttkky/image/upload/v1740077558/photo_2025-01-16_13-17-41_jlup8g.jpg",
-      food_type: "dry food",
+      food_type: "Dry Food",
     },
   ]);
 }

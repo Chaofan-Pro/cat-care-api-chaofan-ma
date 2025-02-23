@@ -90,68 +90,66 @@ export const findFood = async (req, res) => {
   }
 };
 
-// export const editCat = async (req, res) => {
-//   upload(req, res, async (err) => {
-//     if (err) {
-//       return res.status(500).json({ error: "Image upload failed" });
-//     }
+export const editFood = async (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(500).json({ error: "Image upload failed" });
+    }
 
-//     const { name, birth_date, gender, color, weight, intro, photo } = req.body;
+    const { food_name, food_brand, food_photo, food_type } = req.body;
 
-//     if (!name || !birth_date || !gender || !color || !weight || !intro) {
-//       return res.status(400).json({ error: "Missing required fields" });
-//     }
+    if (!food_name || !food_brand || !food_photo || !food_type) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-//     let photoUrl = photo;
-//     if (req.file) {
-//       try {
-//         const uploadResult = await new Promise((resolve, reject) => {
-//           cloudinary.v2.uploader
-//             .upload_stream({ folder: "cat-care-app" }, (error, result) => {
-//               if (error) reject(error);
-//               else resolve(result);
-//             })
-//             .end(req.file.buffer);
-//         });
+    let photoUrl = food_photo;
+    if (req.file) {
+      try {
+        const uploadResult = await new Promise((resolve, reject) => {
+          cloudinary.v2.uploader
+            .upload_stream({ folder: "cat-care-app" }, (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            })
+            .end(req.file.buffer);
+        });
 
-//         photoUrl = uploadResult.secure_url;
-//       } catch (error) {
-//         console.error("Error uploading image:", error);
-//         return res.status(500).json({ error: "Failed to upload image" });
-//       }
-//     }
+        photoUrl = uploadResult.secure_url;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return res.status(500).json({ error: "Failed to upload image" });
+      }
+    }
 
-//     try {
-//       const updateData = {
-//         name,
-//         birth_date,
-//         gender,
-//         color,
-//         weight,
-//         intro,
-//       };
+    try {
+      const updateData = {
+        food_name,
+        food_brand,
+        food_photo,
+        food_type,
+      };
 
-//       if (photoUrl) {
-//         updateData.photo = photoUrl;
-//       }
+      if (photoUrl) {
+        updateData.food_photo = photoUrl;
+      }
 
-//       const rowAffected = await knex("cats")
-//         .where({ id: req.params.id })
-//         .update(updateData);
+      const rowAffected = await knex("food")
+        .where({ id: req.params.id })
+        .update(updateData);
 
-//       if (rowAffected === 0) {
-//         return res
-//           .status(404)
-//           .json({ message: `Cat with ID ${req.params.id} not found` });
-//       }
+      if (rowAffected === 0) {
+        return res
+          .status(404)
+          .json({ message: `Food with ID ${req.params.id} not found` });
+      }
 
-//       res.status(200).json({ message: "Cat updated successfully" });
-//     } catch (error) {
-//       console.error("Error updating cat:", error);
-//       res.status(500).json({ error: "Failed to update cat" });
-//     }
-//   });
-// };
+      res.status(200).json({ message: "Food updated successfully" });
+    } catch (error) {
+      console.error("Error updating food:", error);
+      res.status(500).json({ error: "Failed to update food" });
+    }
+  });
+};
 
 // export const deleteCat = async (req, res) => {
 //   const catId = req.params.id;

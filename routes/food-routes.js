@@ -8,7 +8,7 @@ router.route("/").get(foodController.getFood).post(foodController.addFood);
 router
   .route("/:id")
   .get(foodController.findFood)
-//   .put(catsController.editCat)
+  .put(foodController.editFood)
 //   .delete(catsController.deleteCat);
 
 export default router;
