@@ -1,5 +1,5 @@
 import express from "express";
-import * as catsController from "../controllers/cats-controller.js";
+import * as catsController from "../controllers/catsController.js";
 
 const router = express.Router();
 

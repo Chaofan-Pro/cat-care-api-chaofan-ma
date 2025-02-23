@@ -16,5 +16,5 @@ export function up(knex) {
 }
 
 export function down(knex) {
-  return knex.schema.dropTable("album").dropTable("artist");
+  return knex.schema.dropTable("cats");
 }
