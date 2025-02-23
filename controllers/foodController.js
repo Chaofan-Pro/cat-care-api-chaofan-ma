@@ -151,19 +151,19 @@ export const editFood = async (req, res) => {
   });
 };
 
-// export const deleteCat = async (req, res) => {
-//   const catId = req.params.id;
-//   try {
-//     const rowsDeleted = await knex("cats").where("id", catId).delete();
+export const deleteFood = async (req, res) => {
+  const foodId = req.params.id;
+  try {
+    const rowsDeleted = await knex("food").where("id", foodId).delete();
 
-//     if (rowsDeleted === 0) {
-//       return res.status(404).json({
-//         message: `Cat with ID ${catId} not found`,
-//       });
-//     }
-//     return res.status(204).send();
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).send();
-//   }
-// };
+    if (rowsDeleted === 0) {
+      return res.status(404).json({
+        message: `Food with ID ${catId} not found`,
+      });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};

@@ -9,6 +9,6 @@ router
   .route("/:id")
   .get(foodController.findFood)
   .put(foodController.editFood)
-//   .delete(catsController.deleteCat);
+  .delete(foodController.deleteFood);
 
 export default router;
