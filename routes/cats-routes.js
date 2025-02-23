@@ -1,5 +1,4 @@
 import express from "express";
-import { upload } from "../config/multer-config.js";
 import * as catsController from "../controllers/cats-controller.js";
 
 const router = express.Router();

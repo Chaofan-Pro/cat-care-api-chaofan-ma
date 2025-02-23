@@ -23,7 +23,6 @@ export const getCats = async (_req, res) => {
   }
 };
 
-// export const uploadImage = async (req, res) => {
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -31,40 +30,6 @@ cloudinary.v2.config({
 });
 const storage = multer.memoryStorage();
 const upload = multer({ storage }).single("photo");
-
-//   const form = formidable({ multiples: false });
-
-//   form.parse(req, async (err, fields, files) => {
-//     if (err || !files.image) {
-//       return res
-//         .status(400)
-//         .json({ error: "No image provided or file parsing error" });
-//     }
-//   });
-
-//   const imageFile = files.image[0] || files.image;
-//   if (!imageFile || !imageFile.filepath) {
-//     return res.status(400).json({ error: "Invalid file format" });
-//   }
-
-//   const imagePath = imageFile.filepath;
-//   console.log("✅ File Received:", imagePath);
-
-//   // ✅ Upload to Cloudinary
-//   let uploadResult;
-//   try {
-//     console.log("🔍 Uploading file to Cloudinary:", imagePath);
-//     uploadResult = await cloudinary.uploader.upload(imagePath, {
-//       folder: "uploads",
-//     });
-//   } catch (cloudinaryError) {
-//     console.error("❌ Cloudinary Upload Failed:", cloudinaryError);
-//     return res.status(500).json({ error: "Cloudinary upload failed" });
-//   }
-
-//   const imageUrl = uploadResult.secure_url;
-//   console.log("✅ Cloudinary Upload Success:", imageUrl);
-// };
 
 export const addCat = async (req, res) => {
   upload(req, res, async (err) => {
@@ -87,23 +52,18 @@ export const addCat = async (req, res) => {
     }
 
     try {
-      // Upload image to Cloudinary
       const uploadResult = await new Promise((resolve, reject) => {
         cloudinary.v2.uploader
-          .upload_stream(
-            { folder: "cat-care-app" }, // Optional folder
-            (error, result) => {
-              if (error) reject(error);
-              else resolve(result);
-            }
-          )
+          .upload_stream({ folder: "cat-care-app" }, (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
           .end(req.file.buffer);
       });
 
-      const photoUrl = uploadResult.secure_url; // Get the uploaded image URL
+      const photoUrl = uploadResult.secure_url;
       console.log(photoUrl);
 
-      // Insert cat data into the database
       await knex("cats").insert({
         photo: photoUrl,
         name,
@@ -121,42 +81,6 @@ export const addCat = async (req, res) => {
     }
   });
 };
-//   const { name, birth_date, gender, color, weight, intro } = req.body;
-
-//   let photo = "";
-//   if (req.file) {
-//     photo = `http://localhost:${PORT}/uploads/${req.file.filename}`; // URL to the uploaded file
-//   }
-
-//   if (
-//     !photo ||
-//     !name ||
-//     !birth_date ||
-//     !gender ||
-//     !color ||
-//     !weight ||
-//     !intro
-//   ) {
-//     return res
-//       .status(400)
-//       .json("Error adding cat because of missing properties");
-//   }
-//   try {
-//     await knex("cats").insert({
-//       name,
-//       photo,
-//       birth_date,
-//       gender,
-//       color,
-//       weight,
-//       intro,
-//     });
-//     res.status(201).json();
-//   } catch (error) {
-//     console.log(error);
-//     res.status(400).json({ message: `Error adding cat. ${error}` });
-//   }
-// };
 
 export const findCat = async (req, res) => {
   try {
@@ -190,36 +114,66 @@ export const findCat = async (req, res) => {
 };
 
 export const editCat = async (req, res) => {
-  const { photo, name, birth_date, gender, color, weight, intro } = req.body;
-
-  if (
-    !photo ||
-    !name ||
-    !birth_date ||
-    !gender ||
-    !color ||
-    !weight ||
-    !intro
-  ) {
-    return res
-      .status(400)
-      .json("Error adding cat because of missing properties");
-  }
-
-  try {
-    const rowAffected = await knex("cats")
-      .where({ id: req.params.id })
-      .update(req.body);
-    if (rowAffected === 0) {
-      return res.status(404).json({
-        message: `Cat with ID ${req.params.id} not found`,
-      });
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(500).json({ error: "Image upload failed" });
     }
-    res.status(200).json(rowAffected);
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: `Error editing cat. ${error}` });
-  }
+
+    const { name, birth_date, gender, color, weight, intro, photo } = req.body;
+
+    if (!name || !birth_date || !gender || !color || !weight || !intro) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    let photoUrl = photo;
+    if (req.file) {
+      try {
+        const uploadResult = await new Promise((resolve, reject) => {
+          cloudinary.v2.uploader
+            .upload_stream({ folder: "cat-care-app" }, (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            })
+            .end(req.file.buffer);
+        });
+
+        photoUrl = uploadResult.secure_url;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return res.status(500).json({ error: "Failed to upload image" });
+      }
+    }
+
+    try {
+      const updateData = {
+        name,
+        birth_date,
+        gender,
+        color,
+        weight,
+        intro,
+      };
+
+      if (photoUrl) {
+        updateData.photo = photoUrl;
+      }
+
+      const rowAffected = await knex("cats")
+        .where({ id: req.params.id })
+        .update(updateData);
+
+      if (rowAffected === 0) {
+        return res
+          .status(404)
+          .json({ message: `Cat with ID ${req.params.id} not found` });
+      }
+
+      res.status(200).json({ message: "Cat updated successfully" });
+    } catch (error) {
+      console.error("Error updating cat:", error);
+      res.status(500).json({ error: "Failed to update cat" });
+    }
+  });
 };
 
 export const deleteCat = async (req, res) => {
