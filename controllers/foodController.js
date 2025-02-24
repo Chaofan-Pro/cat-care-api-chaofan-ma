@@ -201,7 +201,8 @@ export const findFoodRating = async (req, res) => {
         "food_rating.food_id",
         "food_rating.cat_id",
         "food_rating.rating",
-        "food_rating.comment"
+        "food_rating.comment",
+        "food_rating.timestamp"
       );
 
     res.status(200).json(ratings);

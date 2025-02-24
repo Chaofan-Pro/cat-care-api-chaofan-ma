@@ -7,8 +7,6 @@ router.route("/").get(ratingController.getRating).post(ratingController.addRatin
 
 router
   .route("/:id")
-//   .get(foodController.findFood)
-//   .put(foodController.editFood)
   .delete(ratingController.deleteRating);
 
 export default router;
