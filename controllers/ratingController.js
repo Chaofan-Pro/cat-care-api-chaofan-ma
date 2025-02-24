@@ -14,7 +14,7 @@ export const getRating = async (_req, res) => {
     );
     res.status(200).json(food);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(400).send("Error getting rating.");
   }
 };

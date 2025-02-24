@@ -16,7 +16,7 @@ export const getFood = async (_req, res) => {
     );
     res.status(200).json(food);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(400).send("Error getting food.");
   }
 };
@@ -59,7 +59,6 @@ export const addFood = async (req, res) => {
       });
 
       const photoUrl = uploadResult.secure_url;
-      console.log(photoUrl);
 
       await knex("food").insert({
         food_photo: photoUrl,
@@ -115,12 +114,7 @@ export const editFood = async (req, res) => {
     const { food_name, food_brand, food_photo, food_type, food_description } =
       req.body;
 
-    if (
-      !food_name ||
-      !food_brand ||
-      !food_type ||
-      !food_description
-    ) {
+    if (!food_name || !food_brand || !food_type || !food_description) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -177,9 +171,12 @@ export const editFood = async (req, res) => {
 export const deleteFood = async (req, res) => {
   const foodId = req.params.id;
   try {
-    const rowsDeleted = await knex("food").where("id", foodId).delete();
+    const rowsDeleteFood = await knex("food").where("id", foodId).delete();
+    const rowsDeleteRating = await knex("food_rating")
+      .where("food_id", foodId)
+      .delete();
 
-    if (rowsDeleted === 0) {
+    if (rowsDeleteFood === 0) {
       return res.status(404).json({
         message: `Food with ID ${catId} not found`,
       });

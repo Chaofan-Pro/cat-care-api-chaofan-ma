@@ -18,7 +18,7 @@ export const getCats = async (_req, res) => {
     );
     res.status(200).json(cats);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(400).send("Error getting cats.");
   }
 };
@@ -62,7 +62,6 @@ export const addCat = async (req, res) => {
       });
 
       const photoUrl = uploadResult.secure_url;
-      console.log(photoUrl);
 
       await knex("cats").insert({
         photo: photoUrl,
@@ -179,10 +178,13 @@ export const editCat = async (req, res) => {
 export const deleteCat = async (req, res) => {
   const catId = req.params.id;
   try {
-    const rowsDeleted = await knex("cats").where("id", catId).delete();
+    const rowsDeleteCat = await knex("cats").where("id", catId).delete();
+    const rowsDeleteRating = await knex("food_rating")
+      .where("cat_id", catId)
+      .delete();
 
-    if (rowsDeleted === 0) {
-      return res.status(404).json({
+    if (rowsDeleteCat === 0) {
+      return res.staus(404).json({
         message: `Cat with ID ${catId} not found`,
       });
     }
