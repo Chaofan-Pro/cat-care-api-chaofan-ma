@@ -2,7 +2,7 @@ export function up(knex) {
   return knex.schema.createTable("food_rating", (table) => {
     table.increments("id").primary();
     table.integer("food_id");
-    table.string("cat_name");
+    table.string("cat_id");
     table.integer("rating");
     table.string("comment").notNullable();
     table.timestamp("created_at").defaultTo(knex.fn.now());

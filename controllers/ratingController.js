@@ -7,7 +7,7 @@ export const getRating = async (_req, res) => {
     const food = await knex("food_rating").select(
       "id",
       "food_id",
-      "cat_name",
+      "cat_id",
       "rating",
       "comment"
     );
@@ -19,10 +19,19 @@ export const getRating = async (_req, res) => {
 };
 
 export const addRating = async (req, res) => {
-  const { food_id, cat_name, rating, comment } = req.body;
+  const { food_id, cat_id, rating, comment } = req.body;
 
-  if (!food_id || !cat_name || !rating || !comment) {
-    return res.status(400).json({ error: "Missing required fields" });
+  if (!food_id) {
+    return res.status(400).json({ error: "Missing required food id" });
+  }
+  if (!cat_id) {
+    return res.status(400).json({ error: "Missing required cat id" });
+  }
+  if (!rating) {
+    return res.status(400).json({ error: "Missing required rating" });
+  }
+  if (!comment) {
+    return res.status(400).json({ error: "Missing required comment" });
   }
 
   try {
@@ -34,7 +43,6 @@ export const addRating = async (req, res) => {
     res.status(500).json({ error: "Failed to add rating" });
   }
 };
-
 
 // export const findFood = async (req, res) => {
 //   try {
@@ -119,19 +127,19 @@ export const addRating = async (req, res) => {
 //   });
 // };
 
-// export const deleteFood = async (req, res) => {
-//   const foodId = req.params.id;
-//   try {
-//     const rowsDeleted = await knex("food").where("id", foodId).delete();
+export const deleteRating = async (req, res) => {
+  const ratingId = req.params.id;
+  try {
+    const rowsDeleted = await knex("food_rating").where("id", ratingId).delete();
 
-//     if (rowsDeleted === 0) {
-//       return res.status(404).json({
-//         message: `Food with ID ${catId} not found`,
-//       });
-//     }
-//     return res.status(204).send();
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).send();
-//   }
-// };
+    if (rowsDeleted === 0) {
+      return res.status(404).json({
+        message: `Food with ID ${ratingId} not found`,
+      });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};

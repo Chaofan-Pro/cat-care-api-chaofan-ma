@@ -10,7 +10,8 @@ export async function seed(knex) {
       gender: "Female",
       color: "grey",
       weight: 2,
-      intro: "Tomat is a cute cat",
+      intro:
+        "Tomat is a cute and gentle cat. Tomat likes to play a lot. Tomat like to sleep near the end of the bed. Tomat eats food slowly",
     },
     {
       id: 2,
@@ -21,7 +22,8 @@ export async function seed(knex) {
       gender: "Female",
       color: "black",
       weight: 3,
-      intro: "Potat is a huge cat",
+      intro:
+        "Potat is a huge and brutal cat. Potat only plays when the toy is moving fast. Potat would come to the bed for pet in the morning. Potat eats a lot and eats fast",
     },
   ]);
 }

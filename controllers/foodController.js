@@ -31,7 +31,8 @@ const upload = multer({ storage }).single("food_photo");
 
 export const addFood = async (req, res) => {
   upload(req, res, async (err) => {
-    if (err) {console.error("Image upload failed:", err);
+    if (err) {
+      console.error("Image upload failed:", err);
       return res.status(500).json({ error: "Image upload failed" });
     }
 
@@ -117,7 +118,6 @@ export const editFood = async (req, res) => {
     if (
       !food_name ||
       !food_brand ||
-      !food_photo ||
       !food_type ||
       !food_description
     ) {
@@ -199,7 +199,7 @@ export const findFoodRating = async (req, res) => {
       .select(
         "food_rating.id",
         "food_rating.food_id",
-        "food_rating.cat_name",
+        "food_rating.cat_id",
         "food_rating.rating",
         "food_rating.comment"
       );

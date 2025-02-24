@@ -3,23 +3,23 @@ export async function seed(knex) {
   await knex("food").insert([
     {
       id: 1,
-      food_name: "Instinct",
-      food_brand: "Chicken feast",
+      food_brand: "Instinct",
+      food_name: "Ultimate Protein Cage-Free Duck Recipe",
       food_photo:
-        "https://res.cloudinary.com/dzhnttkky/image/upload/v1740077558/photo_2025-01-16_13-17-41_jlup8g.jpg",
+        "https://res.cloudinary.com/dzhnttkky/image/upload/v1740308564/cat-care-app/ysshin5dup4v7apwrbdt.jpg",
       food_type: "Dry Food",
       food_description:
-        "At Instinct, we provide a variety of ways to add raw to your pet’s routine. That includes frozen raw meals, freeze-dried raw meals, raw toppers, kibble boosted with raw, and more. ",
+        "90% of protein from real duck, chicken, and eggs. Up to 2X more real duck and chicken.* Absolutely no animal meal ",
     },
     {
       id: 2,
-      food_name: "Instinct",
-      food_brand: "Chicken feast",
+      food_brand: "Acana",
+      food_name: "First Feast",
       food_photo:
-        "https://res.cloudinary.com/dzhnttkky/image/upload/v1740077558/photo_2025-01-16_13-17-41_jlup8g.jpg",
+        "https://res.cloudinary.com/dzhnttkky/image/upload/v1740335685/ACANA_Cat_First_Feast_Front_1_nlqmye.webp",
       food_type: "Dry Food",
       food_description:
-        "At Instinct, we provide a variety of ways to add raw to your pet’s routine. That includes frozen raw meals, freeze-dried raw meals, raw toppers, kibble boosted with raw, and more.",
+        " Rich with 70% quality animal ingredients1 including fresh or raw free-run2 chicken and whole herring, First Feast has the animal protein your kitten needs to grow up strong. ",
     },
   ]);
 }

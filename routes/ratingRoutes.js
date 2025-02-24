@@ -5,10 +5,10 @@ const router = express.Router();
 
 router.route("/").get(ratingController.getRating).post(ratingController.addRating);
 
-// router
-//   .route("/:id")
+router
+  .route("/:id")
 //   .get(foodController.findFood)
 //   .put(foodController.editFood)
-//   .delete(foodController.deleteFood);
+  .delete(ratingController.deleteRating);
 
 export default router;
